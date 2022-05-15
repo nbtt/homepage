@@ -1,12 +1,101 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>Posts on Example Site</title>
+        <title>Posts on Tuan Trinh</title>
         <link>https://nbtt.github.io/homepage/post/</link>
-        <description>Recent content in Posts on Example Site</description>
+        <description>Recent content in Posts on Tuan Trinh</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Mon, 11 Mar 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://nbtt.github.io/homepage/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Mon, 16 May 2022 03:19:21 +0700</lastBuildDate><atom:link href="https://nbtt.github.io/homepage/post/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>System design of a blog</title>
+        <link>https://nbtt.github.io/homepage/p/system-design-of-a-blog/</link>
+        <pubDate>Mon, 16 May 2022 03:19:21 +0700</pubDate>
+        
+        <guid>https://nbtt.github.io/homepage/p/system-design-of-a-blog/</guid>
+        <description>&lt;img src="https://nbtt.github.io/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash.jpg" alt="Featured image of post System design of a blog" /&gt;&lt;p&gt;This post is part of the training program of VNG I am taking: I need to study and understand the general knowledge of system design to propose an acceptable design for this problem. Because the problem statement is quite short, I have made some assumptions when analyzing the problem as well as proposing a design to hopefully be able to solve it.&lt;/p&gt;
+&lt;h2 id=&#34;problem-statement&#34;&gt;Problem statement&lt;/h2&gt;
+&lt;p&gt;Imagine you have to design a system for serving blogs to massive readers (10k tps). How would you design the system?&lt;/p&gt;
+&lt;h2 id=&#34;solving-process&#34;&gt;Solving process&lt;/h2&gt;
+&lt;h3 id=&#34;use-cases-and-constraints&#34;&gt;Use cases and constraints&lt;/h3&gt;
+&lt;p&gt;To keep the design simple, I only consider the criteria of &amp;ldquo;massive readers (10k tps)&amp;rdquo; so any non-related function was ignored.&lt;/p&gt;
+&lt;h4 id=&#34;use-cases&#34;&gt;Use cases&lt;/h4&gt;
+&lt;h5 id=&#34;in-scope&#34;&gt;In scope&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;User views the homepage of blog.&lt;/li&gt;
+&lt;li&gt;User views a blog post.&lt;/li&gt;
+&lt;li&gt;User searches for a keyword.&lt;/li&gt;
+&lt;li&gt;User comments to a post anonymously.&lt;/li&gt;
+&lt;li&gt;Service have high availability.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id=&#34;out-of-scope&#34;&gt;Out of scope&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;User registers for an account.&lt;/li&gt;
+&lt;li&gt;User manages their reading list.&lt;/li&gt;
+&lt;li&gt;Admin user posts a new post. (Admin user rarely change the blog)&lt;/li&gt;
+&lt;li&gt;Analytics.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;constraints-and-assumptions&#34;&gt;Constraints and assumptions&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Viewing the homepage of blog should be fast.&lt;/li&gt;
+&lt;li&gt;Viewing a blog post should be fast.&lt;/li&gt;
+&lt;li&gt;Traffic is not evenly distributed.&lt;/li&gt;
+&lt;li&gt;10 thousands active user.&lt;/li&gt;
+&lt;li&gt;50 thousands blog views per day or 1.5 million blog views per month.&lt;/li&gt;
+&lt;li&gt;5 thousands blog comments per day or 150 thousands blog comments per month.&lt;/li&gt;
+&lt;li&gt;10:1 write/read ratio, system is read heavy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;high-level-design&#34;&gt;High level design&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign.png&#34;
+	width=&#34;439&#34;
+	height=&#34;491&#34;
+	srcset=&#34;https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign_huffbf727e5037ef99d6d237ec2cba927a_21278_480x0_resize_box_3.png 480w, https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign_huffbf727e5037ef99d6d237ec2cba927a_21278_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;High level design&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;89&#34;
+		data-flex-basis=&#34;214px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h3 id=&#34;design-core-components&#34;&gt;Design core components&lt;/h3&gt;
+&lt;h4 id=&#34;user-views-a-blog-post&#34;&gt;User views a blog post&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The user posts a blog post viewing request to the Web Server.&lt;/li&gt;
+&lt;li&gt;The Web Server fowards the request to the Read API Server.&lt;/li&gt;
+&lt;li&gt;Read API server get data from the Memory cache. Memory cache stores IDs, some tag names and some keywords of blogs which are mostly recently viewed or changed (user commented to that blog).&lt;/li&gt;
+&lt;li&gt;Based on data got from Memory cache, Read API get full blog data in Relational Database (e.g. MySQL) and Object Store (for media).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;user-views-the-homepage-of-blog&#34;&gt;User views the homepage of blog&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;This case is simmilar to the case of viewing a blog post except we can store entire homepage into object store for faster access since the blog do not change regularly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;user-searches-for-a-keyword&#34;&gt;User searches for a keyword&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;This case is simmilar to the case of viewing a blog post.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;user-comments-to-a-post-anonymously&#34;&gt;User comments to a post anonymously&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The user posts a comment to a blog post they are viewing to the Web Server.&lt;/li&gt;
+&lt;li&gt;The Web Server fowards the request to the Write API Server.&lt;/li&gt;
+&lt;li&gt;Write API server look for data of current post in Object stores. Based on that data, Write API server stores full comment in Relational Database and Object Store (for media).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;scale-the-design&#34;&gt;Scale the design&lt;/h3&gt;
+&lt;p&gt;Because the system needs to serve 10 thousands person simultaneously, we need to add more components to the system so that it can handle these massive readers. I choose the approach of horizontal scaling instead of vertical scaling because the blog system does not operate in a computational expensive way. It just does some simple operations but the amount of these operations is too large.&lt;/p&gt;
+&lt;h4 id=&#34;use-cdn&#34;&gt;Use CDN&lt;/h4&gt;
+&lt;p&gt;We need to use CDN to make the access to media faster and reduce the workload of the object store. CDN is connect to Object Store and Web Services return to appropriate CDN to serve the users.&lt;/p&gt;
+&lt;h4 id=&#34;use-load-balancer-and-multiple-web-services-and-api-services&#34;&gt;Use Load Balancer and multiple Web Services and API Services&lt;/h4&gt;
+&lt;p&gt;Load balancer distribute the work to the Web Services. Web Services choose among many Read and Write API Services the suitable one to foward them the work.&lt;/p&gt;
+&lt;h4 id=&#34;use-sql-write-master-slave---sql-read-replica&#34;&gt;Use SQL Write Master Slave - SQL Read Replica&lt;/h4&gt;
+&lt;p&gt;Use this model to help accessing and storing data in Database faster and more efficiently.&lt;/p&gt;
+&lt;h4 id=&#34;other-suggestion&#34;&gt;Other suggestion&lt;/h4&gt;
+&lt;p&gt;The blog does not need to serve the user real-time communication, so the comment can be process asynchronously (we need to inform users about that). This approach can postpone the write operations on peak time so it can prevent the server from crashing.&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>Markdown Syntax Guide</title>
         <link>https://nbtt.github.io/homepage/p/markdown-syntax-guide/</link>
         <pubDate>Mon, 11 Mar 2019 00:00:00 +0000</pubDate>
@@ -15,30 +104,98 @@
         <description>&lt;img src="https://nbtt.github.io/p/markdown-syntax-guide/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Markdown Syntax Guide" /&gt;&lt;p&gt;This article offers a sample of basic Markdown syntax that can be used in Hugo content files, also it shows whether basic HTML elements are decorated with CSS in a Hugo theme.&lt;/p&gt;
 &lt;h2 id=&#34;headings&#34;&gt;Headings&lt;/h2&gt;
 &lt;p&gt;The following HTML &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt;—&lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; elements represent six levels of section headings. &lt;code&gt;&amp;lt;h1&amp;gt;&lt;/code&gt; is the highest section level while &lt;code&gt;&amp;lt;h6&amp;gt;&lt;/code&gt; is the lowest.&lt;/p&gt;
-&lt;h1 id=&#34;h1&#34;&gt;H1&lt;/h1&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gh&#34;&gt;# H1
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gh&#34;&gt;&lt;/span&gt;&lt;span class=&#34;gu&#34;&gt;## H2
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gu&#34;&gt;### H3
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gu&#34;&gt;#### H4
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gu&#34;&gt;##### H5
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;gu&#34;&gt;###### H6
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h1 id=&#34;h1&#34;&gt;H1&lt;/h1&gt;
 &lt;h2 id=&#34;h2&#34;&gt;H2&lt;/h2&gt;
 &lt;h3 id=&#34;h3&#34;&gt;H3&lt;/h3&gt;
 &lt;h4 id=&#34;h4&#34;&gt;H4&lt;/h4&gt;
 &lt;h5 id=&#34;h5&#34;&gt;H5&lt;/h5&gt;
 &lt;h6 id=&#34;h6&#34;&gt;H6&lt;/h6&gt;
 &lt;h2 id=&#34;paragraph&#34;&gt;Paragraph&lt;/h2&gt;
-&lt;p&gt;Xerum, quo qui aut unt expliquam qui dolut labo. Aque venitatiusda cum, voluptionse latur sitiae dolessi aut parist aut dollo enim qui voluptate ma dolestendit peritin re plis aut quas inctum laceat est volestemque commosa as cus endigna tectur, offic to cor sequas etum rerum idem sintibus eiur? Quianimin porecus evelectur, cum que nis nust voloribus ratem aut omnimi, sitatur? Quiatem. Nam, omnis sum am facea corem alique molestrunt et eos evelece arcillit ut aut eos eos nus, sin conecerem erum fuga. Ri oditatquam, ad quibus unda veliamenimin cusam et facea ipsamus es exerum sitate dolores editium rerore eost, temped molorro ratiae volorro te reribus dolorer sperchicium faceata tiustia prat.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Xerum, quo qui aut unt expliquam qui dolut labo. Aque venitatiusda cum, voluptionse latur sitiae dolessi aut parist aut dollo enim qui voluptate ma dolestendit peritin re plis aut quas inctum laceat est volestemque commosa as cus endigna tectur, offic to cor sequas etum rerum idem sintibus eiur? Quianimin porecus evelectur, cum que nis nust voloribus ratem aut omnimi, sitatur? Quiatem. Nam, omnis sum am facea corem alique molestrunt et eos evelece arcillit ut aut eos eos nus, sin conecerem erum fuga. Ri oditatquam, ad quibus unda veliamenimin cusam et facea ipsamus es exerum sitate dolores editium rerore eost, temped molorro ratiae volorro te reribus dolorer sperchicium faceata tiustia prat.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sapicia is sinveli squiatum, core et que aut hariosam ex eat.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Xerum, quo qui aut unt expliquam qui dolut labo. Aque venitatiusda cum, voluptionse latur sitiae dolessi aut parist aut dollo enim qui voluptate ma dolestendit peritin re plis aut quas inctum laceat est volestemque commosa as cus endigna tectur, offic to cor sequas etum rerum idem sintibus eiur? Quianimin porecus evelectur, cum que nis nust voloribus ratem aut omnimi, sitatur? Quiatem. Nam, omnis sum am facea corem alique molestrunt et eos evelece arcillit ut aut eos eos nus, sin conecerem erum fuga. Ri oditatquam, ad quibus unda veliamenimin cusam et facea ipsamus es exerum sitate dolores editium rerore eost, temped molorro ratiae volorro te reribus dolorer sperchicium faceata tiustia prat.&lt;/p&gt;
 &lt;p&gt;Itatur? Quiatae cullecum rem ent aut odis in re eossequodi nonsequ idebis ne sapicia is sinveli squiatum, core et que aut hariosam ex eat.&lt;/p&gt;
 &lt;h2 id=&#34;blockquotes&#34;&gt;Blockquotes&lt;/h2&gt;
 &lt;p&gt;The blockquote element represents content that is quoted from another source, optionally with a citation which must be within a &lt;code&gt;footer&lt;/code&gt; or &lt;code&gt;cite&lt;/code&gt; element, and optionally with in-line changes such as annotations and abbreviations.&lt;/p&gt;
 &lt;h4 id=&#34;blockquote-without-attribution&#34;&gt;Blockquote without attribution&lt;/h4&gt;
-&lt;blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;ge&#34;&gt;Tiam, ad mint andaepu dandae nostion secatur sequo quae.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ge&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;ge&#34;&gt;**Note** that you can use *Markdown syntax* within a blockquote.
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;Tiam, ad mint andaepu dandae nostion secatur sequo quae.
 &lt;strong&gt;Note&lt;/strong&gt; that you can use &lt;em&gt;Markdown syntax&lt;/em&gt; within a blockquote.&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h4 id=&#34;blockquote-with-attribution&#34;&gt;Blockquote with attribution&lt;/h4&gt;
-&lt;blockquote&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;ge&#34;&gt;Don&amp;#39;t communicate by sharing memory, share memory by communicating.&amp;lt;br&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ge&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;&amp;gt; &lt;/span&gt;&lt;span class=&#34;ge&#34;&gt;— &amp;lt;cite&amp;gt;Rob Pike[^1]&amp;lt;/cite&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;ge&#34;&gt;&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;[^1]: The above quote is excerpted from Rob Pike&amp;#39;s [&lt;span class=&#34;nt&#34;&gt;talk&lt;/span&gt;](&lt;span class=&#34;na&#34;&gt;https://www.youtube.com/watch?v=PAAkCSZUG1c&lt;/span&gt;) during Gopherfest, November 18, 2015.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;blockquote&gt;
 &lt;p&gt;Don&amp;rsquo;t communicate by sharing memory, share memory by communicating.&lt;!-- raw HTML omitted --&gt;
 — &lt;!-- raw HTML omitted --&gt;Rob Pike&lt;sup id=&#34;fnref:1&#34;&gt;&lt;a href=&#34;#fn:1&#34; class=&#34;footnote-ref&#34; role=&#34;doc-noteref&#34;&gt;1&lt;/a&gt;&lt;/sup&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&#34;tables&#34;&gt;Tables&lt;/h2&gt;
 &lt;p&gt;Tables aren&amp;rsquo;t part of the core Markdown spec, but Hugo supports supports them out-of-the-box.&lt;/p&gt;
-&lt;table&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;   Name | Age
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;--------|------
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    Bob | 27
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  Alice | 23
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;Name&lt;/th&gt;
@@ -57,7 +214,27 @@
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h4 id=&#34;inline-markdown-within-tables&#34;&gt;Inline Markdown within tables&lt;/h4&gt;
-&lt;table&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| Italics   | Bold     | Code   |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| --------  | -------- | ------ |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| &lt;span class=&#34;ge&#34;&gt;*italics*&lt;/span&gt; | &lt;span class=&#34;gs&#34;&gt;**bold**&lt;/span&gt; | &lt;span class=&#34;sb&#34;&gt;`code`&lt;/span&gt; |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| A                                                        | B                                                                                                             | C                                                                                                                                    | D                                                 | E                                                          | F                                                                    |
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|----------------------------------------------------------|---------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------|------------------------------------------------------------|----------------------------------------------------------------------|
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| Lorem ipsum dolor sit amet, consectetur adipiscing elit. | Phasellus ultricies, sapien non euismod aliquam, dui ligula tincidunt odio, at accumsan nulla sapien eget ex. | Proin eleifend dictum ipsum, non euismod ipsum pulvinar et. Vivamus sollicitudin, quam in pulvinar aliquam, metus elit pretium purus | Proin sit amet velit nec enim imperdiet vehicula. | Ut bibendum vestibulum quam, eu egestas turpis gravida nec | Sed scelerisque nec turpis vel viverra. Vivamus vitae pretium sapien |
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
 &lt;th&gt;Italics&lt;/th&gt;
@@ -97,6 +274,7 @@
 &lt;/table&gt;
 &lt;h2 id=&#34;code-blocks&#34;&gt;Code Blocks&lt;/h2&gt;
 &lt;h4 id=&#34;code-block-with-backticks&#34;&gt;Code block with backticks&lt;/h4&gt;
+&lt;p&gt;Wrap the code by two pair of triple backticks (`). Write the name of language right after first one in the pair.&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -181,19 +359,63 @@
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;list-types&#34;&gt;List Types&lt;/h2&gt;
 &lt;h4 id=&#34;ordered-list&#34;&gt;Ordered List&lt;/h4&gt;
-&lt;ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;1. First item
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;2. Second item
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;3. Third item
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ol&gt;
 &lt;li&gt;First item&lt;/li&gt;
 &lt;li&gt;Second item&lt;/li&gt;
 &lt;li&gt;Third item&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h4 id=&#34;unordered-list&#34;&gt;Unordered List&lt;/h4&gt;
-&lt;ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;* List item
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;* Another item
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;* And another item
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;List item&lt;/li&gt;
 &lt;li&gt;Another item&lt;/li&gt;
 &lt;li&gt;And another item&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h4 id=&#34;nested-list&#34;&gt;Nested list&lt;/h4&gt;
-&lt;ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;* Fruit
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  * Apple
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  * Orange
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  * Banana
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;* Dairy
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  * Milk
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;  * Cheese
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
 &lt;li&gt;Fruit
 &lt;ul&gt;
 &lt;li&gt;Apple&lt;/li&gt;
@@ -209,13 +431,61 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;other-elements--abbr-sub-sup-kbd-mark&#34;&gt;Other Elements — abbr, sub, sup, kbd, mark&lt;/h2&gt;
-&lt;p&gt;&lt;!-- raw HTML omitted --&gt;GIF&lt;!-- raw HTML omitted --&gt; is a bitmap image format.&lt;/p&gt;
-&lt;p&gt;H&lt;!-- raw HTML omitted --&gt;2&lt;!-- raw HTML omitted --&gt;O&lt;/p&gt;
-&lt;p&gt;X&lt;!-- raw HTML omitted --&gt;n&lt;!-- raw HTML omitted --&gt; + Y&lt;!-- raw HTML omitted --&gt;n&lt;!-- raw HTML omitted --&gt; = Z&lt;!-- raw HTML omitted --&gt;n&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
-&lt;p&gt;Press &lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;CTRL&lt;!-- raw HTML omitted --&gt;+&lt;!-- raw HTML omitted --&gt;ALT&lt;!-- raw HTML omitted --&gt;+&lt;!-- raw HTML omitted --&gt;Delete&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt; to end the session.&lt;/p&gt;
-&lt;p&gt;Most &lt;!-- raw HTML omitted --&gt;salamanders&lt;!-- raw HTML omitted --&gt; are nocturnal, and hunt for insects, worms, and other small creatures.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;abbr title=&amp;#34;Graphics Interchange Format&amp;#34;&amp;gt;GIF&amp;lt;/abbr&amp;gt; is a bitmap image format.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;!-- raw HTML omitted --&gt;GIF&lt;!-- raw HTML omitted --&gt; is a bitmap image format.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;H&amp;lt;sub&amp;gt;2&amp;lt;/sub&amp;gt;O
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;H&lt;!-- raw HTML omitted --&gt;2&lt;!-- raw HTML omitted --&gt;O&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;X&amp;lt;sup&amp;gt;n&amp;lt;/sup&amp;gt; + Y&amp;lt;sup&amp;gt;n&amp;lt;/sup&amp;gt; = Z&amp;lt;sup&amp;gt;n&amp;lt;/sup&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;X&lt;!-- raw HTML omitted --&gt;n&lt;!-- raw HTML omitted --&gt; + Y&lt;!-- raw HTML omitted --&gt;n&lt;!-- raw HTML omitted --&gt; = Z&lt;!-- raw HTML omitted --&gt;n&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Press &amp;lt;kbd&amp;gt;&amp;lt;kbd&amp;gt;CTRL&amp;lt;/kbd&amp;gt;+&amp;lt;kbd&amp;gt;ALT&amp;lt;/kbd&amp;gt;+&amp;lt;kbd&amp;gt;Delete&amp;lt;/kbd&amp;gt;&amp;lt;/kbd&amp;gt; to end the session.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Press &lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;CTRL&lt;!-- raw HTML omitted --&gt;+&lt;!-- raw HTML omitted --&gt;ALT&lt;!-- raw HTML omitted --&gt;+&lt;!-- raw HTML omitted --&gt;Delete&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt; to end the session.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Most &amp;lt;mark&amp;gt;salamanders&amp;lt;/mark&amp;gt; are nocturnal, and hunt for insects, worms, and other small creatures.
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Most &lt;!-- raw HTML omitted --&gt;salamanders&lt;!-- raw HTML omitted --&gt; are nocturnal, and hunt for insects, worms, and other small creatures.&lt;/p&gt;
 &lt;h2 id=&#34;hyperlinked-image&#34;&gt;Hyperlinked image&lt;/h2&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://google.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;[![Google](https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png)](https://google.com)
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://google.com&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
     &gt;&lt;img src=&#34;https://www.google.com/images/branding/googlelogo/1x/googlelogo_light_color_272x92dp.png&#34;
 	
 	
@@ -342,37 +612,6 @@
 
 &lt;h2 id=&#34;gist-shortcode&#34;&gt;Gist Shortcode&lt;/h2&gt;
 &lt;script type=&#34;application/javascript&#34; src=&#34;https://gist.github.com/spf13/7896402.js&#34;&gt;&lt;/script&gt;</description>
-        </item>
-        <item>
-        <title>Placeholder Text</title>
-        <link>https://nbtt.github.io/homepage/p/placeholder-text/</link>
-        <pubDate>Sat, 09 Mar 2019 00:00:00 +0000</pubDate>
-        
-        <guid>https://nbtt.github.io/homepage/p/placeholder-text/</guid>
-        <description>&lt;img src="https://nbtt.github.io/p/placeholder-text/matt-le-SJSpo9hQf7s-unsplash.jpg" alt="Featured image of post Placeholder Text" /&gt;&lt;p&gt;Lorem est tota propiore conpellat pectoribus de pectora summo.&lt;/p&gt;
-&lt;p&gt;Redit teque digerit hominumque toris verebor lumina non cervice subde tollit usus habet Arctonque, furores quas nec ferunt. Quoque montibus nunc caluere tempus inhospita parcite confusaque translucet patri vestro qui optatis lumine cognoscere flos nubis! Fronde ipsamque patulos Dryopen deorum.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Exierant elisi ambit vivere dedere&lt;/li&gt;
-&lt;li&gt;Duce pollice&lt;/li&gt;
-&lt;li&gt;Eris modo&lt;/li&gt;
-&lt;li&gt;Spargitque ferrea quos palude&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;Rursus nulli murmur; hastile inridet ut ab gravi sententia! Nomine potitus silentia flumen, sustinet placuit petis in dilapsa erat sunt. Atria tractus malis.&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Comas hunc haec pietate fetum procerum dixit&lt;/li&gt;
-&lt;li&gt;Post torum vates letum Tiresia&lt;/li&gt;
-&lt;li&gt;Flumen querellas&lt;/li&gt;
-&lt;li&gt;Arcanaque montibus omnes&lt;/li&gt;
-&lt;li&gt;Quidem et&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h1 id=&#34;vagus-elidunt&#34;&gt;Vagus elidunt&lt;/h1&gt;
-&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
-&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://en.wikipedia.org/wiki/Canons_of_page_construction#Van_de_Graaf_canon&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;The Van de Graaf Canon&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;mane-refeci-capiebant-unda-mulcebat&#34;&gt;Mane refeci capiebant unda mulcebat&lt;/h2&gt;
-&lt;p&gt;Victa caducifer, malo vulnere contra dicere aurato, ludit regale, voca! Retorsit colit est profanae esse virescere furit nec; iaculi matertera et visa est, viribus. Divesque creatis, tecta novat collumque vulnus est, parvas. &lt;strong&gt;Faces illo pepulere&lt;/strong&gt; tempus adest. Tendit flamma, ab opes virum sustinet, sidus sequendo urbis.&lt;/p&gt;
-&lt;p&gt;Iubar proles corpore raptos vero auctor imperium; sed et huic: manus caeli Lelegas tu lux. Verbis obstitit intus oblectamina fixis linguisque ausus sperare Echionides cornuaque tenent clausit possit. Omnia putatur. Praeteritae refert ausus; ferebant e primus lora nutat, vici quae mea ipse. Et iter nil spectatae vulnus haerentia iuste et exercebat, sui et.&lt;/p&gt;
-&lt;p&gt;Eurytus Hector, materna ipsumque ut Politen, nec, nate, ignari, vernum cohaesit sequitur. Vel &lt;strong&gt;mitis temploque&lt;/strong&gt; vocatus, inque alis, &lt;em&gt;oculos nomen&lt;/em&gt; non silvis corpore coniunx ne displicet illa. Crescunt non unus, vidit visa quantum inmiti flumina mortis facto sic: undique a alios vincula sunt iactata abdita! Suspenderat ego fuit tendit: luna, ante urbem Propoetides &lt;strong&gt;parte&lt;/strong&gt;.&lt;/p&gt;</description>
         </item>
         <item>
         <title>Math Typesetting</title>

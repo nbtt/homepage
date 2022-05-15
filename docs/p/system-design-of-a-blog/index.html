@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en-us" dir="ltr">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='System design proposal of a blog serving massive readers (10k tps)'><title>System design of a blog</title>
+
+<link rel='canonical' href='https://nbtt.github.io/homepage/p/system-design-of-a-blog/'>
+
+<link rel="stylesheet" href="https://nbtt.github.io/homepage/scss/style.min.d9e0562edde3d2bdf9d3d81365095a29d062ddaaa5d671f22168e57dfdb18b4f.css"><meta property='og:title' content='System design of a blog'>
+<meta property='og:description' content='System design proposal of a blog serving massive readers (10k tps)'>
+<meta property='og:url' content='https://nbtt.github.io/homepage/p/system-design-of-a-blog/'>
+<meta property='og:site_name' content='Tuan Trinh'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='theory' /><meta property='article:tag' content='design' /><meta property='article:tag' content='blog' /><meta property='article:published_time' content='2022-05-16T03:19:21&#43;07:00'/><meta property='article:modified_time' content='2022-05-16T03:19:21&#43;07:00'/><meta property='og:image' content='https://nbtt.github.io/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash.jpg' />
+<meta name="twitter:title" content="System design of a blog">
+<meta name="twitter:description" content="System design proposal of a blog serving massive readers (10k tps)"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://nbtt.github.io/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash.jpg' />
+    </head>
+    <body class="
+    article-page
+    ">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky ">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header>
+        
+            
+            <figure class="site-avatar">
+                <a href="https://nbtt.github.io/homepage/">
+                
+                    
+                    
+                    
+                        
+                        <img src="https://nbtt.github.io/homepage/img/ava_150x150_hu741f86662e299f6950e8dcd29f3e3b73_30011_300x0_resize_box_3.png" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+                </a>
+                
+            </figure>
+            
+        
+        
+        <div class="site-meta">
+            <h1 class="site-name"><a href="https://nbtt.github.io/homepage/">Tuan Trinh</a></h1>
+            <h2 class="site-description">Just a Software development fresher who try to be better than himself everyday.</h2>
+        </div>
+    </header><ol class="social-menu">
+            
+                <li>
+                    <a 
+                        href='https://github.com/nbtt'
+                        target="_blank"
+                        title="GitHub"
+                    >
+                        
+                        
+                            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+  <path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5" />
+</svg>
+
+
+
+                        
+                    </a>
+                </li>
+            
+        </ol><ol class="menu" id="main-menu">
+        
+        
+        
+
+        <li >
+            <a href='https://nbtt.github.io/homepage/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://nbtt.github.io/homepage/about/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://nbtt.github.io/homepage/archives/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://nbtt.github.io/homepage/search/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='https://nbtt.github.io/homepage/links/' >
+                
+                
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-link" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" />
+  <path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" />
+</svg>
+
+
+
+                
+                <span>Links</span>
+            </a>
+        </li>
+        
+
+        <div class="menu-bottom-section">
+            
+            
+                <li id="dark-mode-toggle">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                    <span>Dark Mode</span>
+                </li>
+            
+        </div>
+    </ol>
+</aside>
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="https://nbtt.github.io/homepage/p/system-design-of-a-blog/">
+                <img src="https://nbtt.github.io/homepage/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash_hu6ce49dd00cc35e26a4aabd90f4cb9cd2_308176_800x0_resize_q75_box.jpg"
+                        srcset="https://nbtt.github.io/homepage/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash_hu6ce49dd00cc35e26a4aabd90f4cb9cd2_308176_800x0_resize_q75_box.jpg 800w, https://nbtt.github.io/homepage/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash_hu6ce49dd00cc35e26a4aabd90f4cb9cd2_308176_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="533" 
+                        loading="lazy"
+                        alt="Featured image of post System design of a blog" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="https://nbtt.github.io/homepage/categories/system-design/" >
+                system design
+            </a>
+        
+    </header>
+    
+
+    <div class="article-title-wrapper">
+        <h2 class="article-title">
+            <a href="https://nbtt.github.io/homepage/p/system-design-of-a-blog/">System design of a blog</a>
+        </h2>
+    
+        
+        <h3 class="article-subtitle">
+            System design proposal of a blog serving massive readers (10k tps)
+        </h3>
+        
+    </div>
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">May 16, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    4 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+
+    
+</div>
+</header>
+
+    <section class="article-content">
+    
+    
+    <p>This post is part of the training program of VNG I am taking: I need to study and understand the general knowledge of system design to propose an acceptable design for this problem. Because the problem statement is quite short, I have made some assumptions when analyzing the problem as well as proposing a design to hopefully be able to solve it.</p>
+<h2 id="problem-statement">Problem statement</h2>
+<p>Imagine you have to design a system for serving blogs to massive readers (10k tps). How would you design the system?</p>
+<h2 id="solving-process">Solving process</h2>
+<h3 id="use-cases-and-constraints">Use cases and constraints</h3>
+<p>To keep the design simple, I only consider the criteria of &ldquo;massive readers (10k tps)&rdquo; so any non-related function was ignored.</p>
+<h4 id="use-cases">Use cases</h4>
+<h5 id="in-scope">In scope</h5>
+<ul>
+<li>User views the homepage of blog.</li>
+<li>User views a blog post.</li>
+<li>User searches for a keyword.</li>
+<li>User comments to a post anonymously.</li>
+<li>Service have high availability.</li>
+</ul>
+<h5 id="out-of-scope">Out of scope</h5>
+<ul>
+<li>User registers for an account.</li>
+<li>User manages their reading list.</li>
+<li>Admin user posts a new post. (Admin user rarely change the blog)</li>
+<li>Analytics.</li>
+</ul>
+<h4 id="constraints-and-assumptions">Constraints and assumptions</h4>
+<ul>
+<li>Viewing the homepage of blog should be fast.</li>
+<li>Viewing a blog post should be fast.</li>
+<li>Traffic is not evenly distributed.</li>
+<li>10 thousands active user.</li>
+<li>50 thousands blog views per day or 1.5 million blog views per month.</li>
+<li>5 thousands blog comments per day or 150 thousands blog comments per month.</li>
+<li>10:1 write/read ratio, system is read heavy.</li>
+</ul>
+<h3 id="high-level-design">High level design</h3>
+<p><img src="https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign.png"
+	width="439"
+	height="491"
+	srcset="https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign_huffbf727e5037ef99d6d237ec2cba927a_21278_480x0_resize_box_3.png 480w, https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign_huffbf727e5037ef99d6d237ec2cba927a_21278_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="High level design"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="89"
+		data-flex-basis="214px"
+	
+></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<h3 id="design-core-components">Design core components</h3>
+<h4 id="user-views-a-blog-post">User views a blog post</h4>
+<ul>
+<li>The user posts a blog post viewing request to the Web Server.</li>
+<li>The Web Server fowards the request to the Read API Server.</li>
+<li>Read API server get data from the Memory cache. Memory cache stores IDs, some tag names and some keywords of blogs which are mostly recently viewed or changed (user commented to that blog).</li>
+<li>Based on data got from Memory cache, Read API get full blog data in Relational Database (e.g. MySQL) and Object Store (for media).</li>
+</ul>
+<h4 id="user-views-the-homepage-of-blog">User views the homepage of blog</h4>
+<ul>
+<li>This case is simmilar to the case of viewing a blog post except we can store entire homepage into object store for faster access since the blog do not change regularly.</li>
+</ul>
+<h4 id="user-searches-for-a-keyword">User searches for a keyword</h4>
+<ul>
+<li>This case is simmilar to the case of viewing a blog post.</li>
+</ul>
+<h4 id="user-comments-to-a-post-anonymously">User comments to a post anonymously</h4>
+<ul>
+<li>The user posts a comment to a blog post they are viewing to the Web Server.</li>
+<li>The Web Server fowards the request to the Write API Server.</li>
+<li>Write API server look for data of current post in Object stores. Based on that data, Write API server stores full comment in Relational Database and Object Store (for media).</li>
+</ul>
+<h3 id="scale-the-design">Scale the design</h3>
+<p>Because the system needs to serve 10 thousands person simultaneously, we need to add more components to the system so that it can handle these massive readers. I choose the approach of horizontal scaling instead of vertical scaling because the blog system does not operate in a computational expensive way. It just does some simple operations but the amount of these operations is too large.</p>
+<h4 id="use-cdn">Use CDN</h4>
+<p>We need to use CDN to make the access to media faster and reduce the workload of the object store. CDN is connect to Object Store and Web Services return to appropriate CDN to serve the users.</p>
+<h4 id="use-load-balancer-and-multiple-web-services-and-api-services">Use Load Balancer and multiple Web Services and API Services</h4>
+<p>Load balancer distribute the work to the Web Services. Web Services choose among many Read and Write API Services the suitable one to foward them the work.</p>
+<h4 id="use-sql-write-master-slave---sql-read-replica">Use SQL Write Master Slave - SQL Read Replica</h4>
+<p>Use this model to help accessing and storing data in Database faster and more efficiently.</p>
+<h4 id="other-suggestion">Other suggestion</h4>
+<p>The blog does not need to serve the user real-time communication, so the comment can be process asynchronously (we need to inform users about that). This approach can postpone the write operations on peak time so it can prevent the server from crashing.</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="https://nbtt.github.io/homepage/tags/theory/">theory</a>
+        
+            <a href="https://nbtt.github.io/homepage/tags/design/">design</a>
+        
+            <a href="https://nbtt.github.io/homepage/tags/blog/">blog</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    
+
+    
+
+     
+    
+        
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2022 Tuan Trinh
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.11.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    <aside class="sidebar right-sidebar sticky">
+        
+            
+                
+    <section class="widget archives">
+        <div class="widget-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+        </div>
+        <h2 class="widget-title section-title">Table of contents</h2>
+        
+        <div class="widget--toc">
+            <nav id="TableOfContents">
+  <ol>
+    <li><a href="#problem-statement">Problem statement</a></li>
+    <li><a href="#solving-process">Solving process</a>
+      <ol>
+        <li><a href="#use-cases-and-constraints">Use cases and constraints</a>
+          <ol>
+            <li><a href="#use-cases">Use cases</a></li>
+            <li><a href="#constraints-and-assumptions">Constraints and assumptions</a></li>
+          </ol>
+        </li>
+        <li><a href="#high-level-design">High level design</a></li>
+        <li><a href="#design-core-components">Design core components</a>
+          <ol>
+            <li><a href="#user-views-a-blog-post">User views a blog post</a></li>
+            <li><a href="#user-views-the-homepage-of-blog">User views the homepage of blog</a></li>
+            <li><a href="#user-searches-for-a-keyword">User searches for a keyword</a></li>
+            <li><a href="#user-comments-to-a-post-anonymously">User comments to a post anonymously</a></li>
+          </ol>
+        </li>
+        <li><a href="#scale-the-design">Scale the design</a>
+          <ol>
+            <li><a href="#use-cdn">Use CDN</a></li>
+            <li><a href="#use-load-balancer-and-multiple-web-services-and-api-services">Use Load Balancer and multiple Web Services and API Services</a></li>
+            <li><a href="#use-sql-write-master-slave---sql-read-replica">Use SQL Write Master Slave - SQL Read Replica</a></li>
+            <li><a href="#other-suggestion">Other suggestion</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+        </div>
+    </section>
+
+            
+        
+    </aside>
+
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="https://nbtt.github.io/homepage/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

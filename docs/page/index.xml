@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>Pages on Example Site</title>
+        <title>Pages on Tuan Trinh</title>
         <link>https://nbtt.github.io/homepage/page/</link>
-        <description>Recent content in Pages on Example Site</description>
+        <description>Recent content in Pages on Tuan Trinh</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
         <lastBuildDate>Tue, 28 May 2019 00:00:00 +0000</lastBuildDate><atom:link href="https://nbtt.github.io/homepage/page/index.xml" rel="self" type="application/rss+xml" /><item>
@@ -17,29 +17,21 @@
         <item>
         <title>About</title>
         <link>https://nbtt.github.io/homepage/about/</link>
-        <pubDate>Thu, 28 Feb 2019 00:00:00 +0000</pubDate>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
         
         <guid>https://nbtt.github.io/homepage/about/</guid>
-        <description>&lt;p&gt;Written in Go, Hugo is an open source static site generator available under the &lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio/hugo/blob/master/LICENSE&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;Apache Licence 2.0.&lt;/a&gt; Hugo supports TOML, YAML and JSON data file types, Markdown and HTML content files and uses shortcodes to add rich content. Other notable features are taxonomies, multilingual mode, image processing, custom output formats, HTML/CSS/JS minification and support for Sass SCSS workflows.&lt;/p&gt;
-&lt;p&gt;Hugo makes use of a variety of open source projects including:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/yuin/goldmark&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://github.com/yuin/goldmark&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/alecthomas/chroma&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://github.com/alecthomas/chroma&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/muesli/smartcrop&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://github.com/muesli/smartcrop&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/spf13/cobra&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://github.com/spf13/cobra&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/spf13/viper&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;https://github.com/spf13/viper&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Hugo is ideal for blogs, corporate websites, creative portfolios, online magazines, single page applications or even a website with thousands of pages.&lt;/p&gt;
-&lt;p&gt;Hugo is for people who want to hand code their own website without worrying about setting up complicated runtimes, dependencies and databases.&lt;/p&gt;
-&lt;p&gt;Websites built with Hugo are extremelly fast, secure and can be deployed anywhere including, AWS, GitHub Pages, Heroku, Netlify and any other hosting provider.&lt;/p&gt;
-&lt;p&gt;Learn more and contribute on &lt;a class=&#34;link&#34; href=&#34;https://github.com/gohugoio&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;GitHub&lt;/a&gt;.&lt;/p&gt;
+        <description>&lt;h2 id=&#34;about-me&#34;&gt;About me&lt;/h2&gt;
+&lt;p&gt;I am a software development fresher and a third-year student. I study &lt;a class=&#34;link&#34; href=&#34;https://www.hcmut.edu.vn/en&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Computer Science at Ho Chi Minh City University of Technology (HCMUT)&lt;/a&gt; so I know much fundamental knowledge about software development in general, but in practice, I have only done projects at university. Recently, I am joining the &lt;a class=&#34;link&#34; href=&#34;https://career.vng.com.vn/danh-cho-sinh-vien/vng-tech-fresher-2022&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;fresher program of VNG&lt;/a&gt;, which provides me more opportunities to explore and exploit more about the software development industry. I am trying to learn more things, to be better than myself everyday.&lt;/p&gt;
+&lt;h2 id=&#34;about-this-site&#34;&gt;About this site&lt;/h2&gt;
+&lt;p&gt;This site is created as a coursework of a training program in VNG of me. But that is just a reason for the starting of the site, it cannot imply anything. Maybe, in the future, I will share more knowledge that I would have learnt, or sometimes I will just write a brief thinking of a book. But in general, this site is expected to always contain some information about me and my experience.&lt;/p&gt;
+&lt;p&gt;I use &lt;a class=&#34;link&#34; href=&#34;https://gohugo.io/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Hugo&lt;/a&gt; and &lt;a class=&#34;link&#34; href=&#34;https://pages.github.com/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Github Pages&lt;/a&gt; to create this site. The template I am using have some helpful posts about Hugo (for those who want to use it to create a site like me) or &lt;a class=&#34;link&#34; href=&#34;https://en.wikipedia.org/wiki/Markdown&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;Markdown&lt;/a&gt; (if you are an active writer and still do not know about it, trust me you will love it). I will keep these posts present (another reason is the current emptyness of the site).&lt;/p&gt;
+&lt;h2 id=&#34;contact&#34;&gt;Contact&lt;/h2&gt;
+&lt;p&gt;If you have something to discuss with me, or just want to be my friends, feel free to contact me by my email &lt;a class=&#34;link&#34; href=&#34;mailto:tnbaotuan2@gmail.com&#34; &gt;&lt;code&gt;tnbaotuan2@gmail.com&lt;/code&gt;&lt;/a&gt;.&lt;/p&gt;
 </description>
         </item>
         <item>

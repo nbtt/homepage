@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>design on Tuan Trinh</title>
+        <link>https://nbtt.github.io/homepage/tags/design/</link>
+        <description>Recent content in design on Tuan Trinh</description>
+        <generator>Hugo -- gohugo.io</generator>
+        <language>en-us</language>
+        <lastBuildDate>Mon, 16 May 2022 03:19:21 +0700</lastBuildDate><atom:link href="https://nbtt.github.io/homepage/tags/design/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>System design of a blog</title>
+        <link>https://nbtt.github.io/homepage/p/system-design-of-a-blog/</link>
+        <pubDate>Mon, 16 May 2022 03:19:21 +0700</pubDate>
+        
+        <guid>https://nbtt.github.io/homepage/p/system-design-of-a-blog/</guid>
+        <description>&lt;img src="https://nbtt.github.io/p/system-design-of-a-blog/daniel-thomas-gWlBxOAgXgQ-unsplash.jpg" alt="Featured image of post System design of a blog" /&gt;&lt;p&gt;This post is part of the training program of VNG I am taking: I need to study and understand the general knowledge of system design to propose an acceptable design for this problem. Because the problem statement is quite short, I have made some assumptions when analyzing the problem as well as proposing a design to hopefully be able to solve it.&lt;/p&gt;
+&lt;h2 id=&#34;problem-statement&#34;&gt;Problem statement&lt;/h2&gt;
+&lt;p&gt;Imagine you have to design a system for serving blogs to massive readers (10k tps). How would you design the system?&lt;/p&gt;
+&lt;h2 id=&#34;solving-process&#34;&gt;Solving process&lt;/h2&gt;
+&lt;h3 id=&#34;use-cases-and-constraints&#34;&gt;Use cases and constraints&lt;/h3&gt;
+&lt;p&gt;To keep the design simple, I only consider the criteria of &amp;ldquo;massive readers (10k tps)&amp;rdquo; so any non-related function was ignored.&lt;/p&gt;
+&lt;h4 id=&#34;use-cases&#34;&gt;Use cases&lt;/h4&gt;
+&lt;h5 id=&#34;in-scope&#34;&gt;In scope&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;User views the homepage of blog.&lt;/li&gt;
+&lt;li&gt;User views a blog post.&lt;/li&gt;
+&lt;li&gt;User searches for a keyword.&lt;/li&gt;
+&lt;li&gt;User comments to a post anonymously.&lt;/li&gt;
+&lt;li&gt;Service have high availability.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h5 id=&#34;out-of-scope&#34;&gt;Out of scope&lt;/h5&gt;
+&lt;ul&gt;
+&lt;li&gt;User registers for an account.&lt;/li&gt;
+&lt;li&gt;User manages their reading list.&lt;/li&gt;
+&lt;li&gt;Admin user posts a new post. (Admin user rarely change the blog)&lt;/li&gt;
+&lt;li&gt;Analytics.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;constraints-and-assumptions&#34;&gt;Constraints and assumptions&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;Viewing the homepage of blog should be fast.&lt;/li&gt;
+&lt;li&gt;Viewing a blog post should be fast.&lt;/li&gt;
+&lt;li&gt;Traffic is not evenly distributed.&lt;/li&gt;
+&lt;li&gt;10 thousands active user.&lt;/li&gt;
+&lt;li&gt;50 thousands blog views per day or 1.5 million blog views per month.&lt;/li&gt;
+&lt;li&gt;5 thousands blog comments per day or 150 thousands blog comments per month.&lt;/li&gt;
+&lt;li&gt;10:1 write/read ratio, system is read heavy.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;high-level-design&#34;&gt;High level design&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign.png&#34;
+	width=&#34;439&#34;
+	height=&#34;491&#34;
+	srcset=&#34;https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign_huffbf727e5037ef99d6d237ec2cba927a_21278_480x0_resize_box_3.png 480w, https://nbtt.github.io/homepage/p/system-design-of-a-blog/highleveldesign_huffbf727e5037ef99d6d237ec2cba927a_21278_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;High level design&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;89&#34;
+		data-flex-basis=&#34;214px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;h3 id=&#34;design-core-components&#34;&gt;Design core components&lt;/h3&gt;
+&lt;h4 id=&#34;user-views-a-blog-post&#34;&gt;User views a blog post&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The user posts a blog post viewing request to the Web Server.&lt;/li&gt;
+&lt;li&gt;The Web Server fowards the request to the Read API Server.&lt;/li&gt;
+&lt;li&gt;Read API server get data from the Memory cache. Memory cache stores IDs, some tag names and some keywords of blogs which are mostly recently viewed or changed (user commented to that blog).&lt;/li&gt;
+&lt;li&gt;Based on data got from Memory cache, Read API get full blog data in Relational Database (e.g. MySQL) and Object Store (for media).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;user-views-the-homepage-of-blog&#34;&gt;User views the homepage of blog&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;This case is simmilar to the case of viewing a blog post except we can store entire homepage into object store for faster access since the blog do not change regularly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;user-searches-for-a-keyword&#34;&gt;User searches for a keyword&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;This case is simmilar to the case of viewing a blog post.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;user-comments-to-a-post-anonymously&#34;&gt;User comments to a post anonymously&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;The user posts a comment to a blog post they are viewing to the Web Server.&lt;/li&gt;
+&lt;li&gt;The Web Server fowards the request to the Write API Server.&lt;/li&gt;
+&lt;li&gt;Write API server look for data of current post in Object stores. Based on that data, Write API server stores full comment in Relational Database and Object Store (for media).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;scale-the-design&#34;&gt;Scale the design&lt;/h3&gt;
+&lt;p&gt;Because the system needs to serve 10 thousands person simultaneously, we need to add more components to the system so that it can handle these massive readers. I choose the approach of horizontal scaling instead of vertical scaling because the blog system does not operate in a computational expensive way. It just does some simple operations but the amount of these operations is too large.&lt;/p&gt;
+&lt;h4 id=&#34;use-cdn&#34;&gt;Use CDN&lt;/h4&gt;
+&lt;p&gt;We need to use CDN to make the access to media faster and reduce the workload of the object store. CDN is connect to Object Store and Web Services return to appropriate CDN to serve the users.&lt;/p&gt;
+&lt;h4 id=&#34;use-load-balancer-and-multiple-web-services-and-api-services&#34;&gt;Use Load Balancer and multiple Web Services and API Services&lt;/h4&gt;
+&lt;p&gt;Load balancer distribute the work to the Web Services. Web Services choose among many Read and Write API Services the suitable one to foward them the work.&lt;/p&gt;
+&lt;h4 id=&#34;use-sql-write-master-slave---sql-read-replica&#34;&gt;Use SQL Write Master Slave - SQL Read Replica&lt;/h4&gt;
+&lt;p&gt;Use this model to help accessing and storing data in Database faster and more efficiently.&lt;/p&gt;
+&lt;h4 id=&#34;other-suggestion&#34;&gt;Other suggestion&lt;/h4&gt;
+&lt;p&gt;The blog does not need to serve the user real-time communication, so the comment can be process asynchronously (we need to inform users about that). This approach can postpone the write operations on peak time so it can prevent the server from crashing.&lt;/p&gt;
+</description>
+        </item>
+        
+    </channel>
+</rss>
