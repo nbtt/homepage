@@ -1,8 +1,10 @@
-baseurl: https://example.com
+baseurl: https://nbtt.github.io/homepage/
 languageCode: en-us
 theme: hugo-theme-stack
 paginate: 5
 title: Example Site
+
+canonifyURLs: true
 
 languages:
     en:
