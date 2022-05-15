@@ -2,24 +2,15 @@ baseurl: https://nbtt.github.io/homepage/
 languageCode: en-us
 theme: hugo-theme-stack
 paginate: 5
-title: Example Site
+title: Tuan Trinh
 
 canonifyURLs: true
 
 languages:
     en:
         languageName: English
-        title: Example Site
+        title: Tuan Trinh
         weight: 1
-    zh-cn:
-        languageName: 中文
-        title: 演示站点
-        weight: 2
-    ar:
-        languageName: عربي
-        languagedirection: rtl
-        title: موقع تجريبي
-        weight: 3
 
 # Change it to your Disqus shortname before using
 disqusShortname: hugo-theme-stack
@@ -47,20 +38,20 @@ params:
     favicon:
 
     footer:
-        since: 2020
+        since: 2022
         customText:
 
     dateFormat:
         published: Jan 02, 2006
-        lastUpdated: Jan 02, 2006 15:04 MST
+        lastUpdated: Jan 02, 2006 15:04 UTC
 
     sidebar:
-        emoji: 🍥
-        subtitle: Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+        # emoji: 🍥
+        subtitle: Just a Software development fresher who try to be better than himself everyday.
         avatar:
             enabled: true
             local: true
-            src: img/avatar.png
+            src: img/ava_150x150.png
 
     article:
         math: false
@@ -71,7 +62,7 @@ params:
             default: Licensed under CC BY-NC-SA 4.0
 
     comments:
-        enabled: true
+        enabled: false
         provider: disqus
 
         disqusjs:
@@ -151,9 +142,9 @@ params:
     widgets:
         homepage:
             - type: search
-            - type: archives
-              params:
-                  limit: 5
+            # - type: archives
+            #   params:
+            #       limit: 5
             - type: categories
               params:
                   limit: 10
@@ -199,15 +190,15 @@ menu:
     social:
         - identifier: github
           name: GitHub
-          url: https://github.com/CaiJimmy/hugo-theme-stack
+          url: https://github.com/nbtt
           params:
               icon: brand-github
 
-        - identifier: twitter
-          name: Twitter
-          url: https://twitter.com
-          params:
-              icon: brand-twitter
+        # - identifier: twitter
+        #   name: Twitter
+        #   url: https://twitter.com
+        #   params:
+        #       icon: brand-twitter
 
 related:
     includeNewer: true
